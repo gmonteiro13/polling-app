@@ -19,17 +19,15 @@ def detail(request, question_id):
 
 
 def results(request, question_id):
-    question = Question.objects.get(pk=question_id)
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question)
-
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, "polls/results.html", {"question": question})
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST["choice"])
+        # exemplo do objeto post: <QueryDict: {'csrfmiddlewaretoken': ['AbC123xyz'], 'choice': ['1']}>
     except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
         return render(
             request,
             "polls/detail.html",
@@ -41,7 +39,7 @@ def vote(request, question_id):
     else:
         selected_choice.votes = F("votes") + 1
         selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
+        # sempre deve retornar um HttpResponseRedirect depois de lidar com dados POST
+        # para evitar que os dados sejam postados duas vezes se o usuário clicar no botão Voltar
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+        # reverse cria a URL de acordo com a view e os argumentos passados, exemplo: /polls/5/results/

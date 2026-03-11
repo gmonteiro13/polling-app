@@ -1,4 +1,6 @@
 <form action="{% url 'polls:vote' question.id %}" method="post">
+<!-- O atributo action é o URL para onde os dados do formulário serão enviados quando o usuário clicar no botão "Vote".
+O método POST é usado para enviar os dados do formulário de forma segura. -->
 {% csrf_token %}
 <fieldset>
     <legend><h1>{{ question.question_text }}</h1></legend>
@@ -10,3 +12,17 @@
 </fieldset>
 <input type="submit" value="Vote">
 </form>
+<!-- O que é enviado no objeto POST: csrfmiddlewaretoken=AbC123xyz&choice=1
+Do lado do django, chega: <QueryDict: {'csrfmiddlewaretoken': ['AbC123xyz'], 'choice': ['1']}>
+-->
+
+
+<!-- Form tem essa aparência:
+<input type="radio" name="choice" id="choice1" value="1">
+<label for="choice1">Not much</label><br>
+
+<input type="radio" name="choice" id="choice2" value="2">
+<label for="choice2">The sky</label><br>
+
+<input type="radio" name="choice" id="choice3" value="3">
+<label for="choice3">Just hacking again</label><br> -->
