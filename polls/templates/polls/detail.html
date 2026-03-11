@@ -1,3 +1,7 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'polls/style.css' %}">
+
 <form action="{% url 'polls:vote' question.id %}" method="post">
 <!-- O atributo action é o URL para onde os dados do formulário serão enviados quando o usuário clicar no botão "Vote".
 O método POST é usado para enviar os dados do formulário de forma segura. -->
