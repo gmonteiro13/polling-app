@@ -5,7 +5,10 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 
+from rest_framework import viewsets
+
 from .models import Choice, Question
+from .serializers import QuestionSerializer
 
 
 class IndexView(generic.ListView):
@@ -58,3 +61,7 @@ def vote(request, question_id):
         # para evitar que os dados sejam postados duas vezes se o usuário clicar no botão Voltar
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
         # reverse cria a URL de acordo com a view e os argumentos passados, exemplo: /polls/5/results/
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
