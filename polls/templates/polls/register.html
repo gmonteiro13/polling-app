@@ -1,0 +1,50 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'polls/style.css' %}">
+
+<div class="results-container">
+    <h1>Criar Nova Conta</h1>
+    
+    <form id="registerForm">
+        <input type="text" id="username" placeholder="Usuário" required><br><br>
+        <input type="email" id="email" placeholder="E-mail" required><br><br>
+        <input type="password" id="password" placeholder="Senha (mín. 8 caracteres)" required><br><br>
+        <input type="submit" value="Registrar">
+    </form>
+
+    <p id="message"></p>
+    <a href="{% url 'polls:index' %}">Voltar para enquetes</a>
+</div>
+
+<script>
+document.getElementById('registerForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const msgElement = document.getElementById('message');
+    
+    const data = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+    };
+
+    try {
+        const response = await fetch('/api/register/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            msgElement.style.color = "green";
+            msgElement.innerText = "Conta criada com sucesso! Redirecionando...";
+            // Redireciona para o login ou index após 2 segundos
+            setTimeout(() => { window.location.href = "{% url 'polls:index' %}"; }, 2000);
+        } else {
+            const errorData = await response.json();
+            msgElement.style.color = "red";
+            msgElement.innerText = "Erro: " + JSON.stringify(errorData);
+        }
+    } catch (error) {
+        msgElement.innerText = "Erro de conexão com a API.";
+    }
+};
+</script>

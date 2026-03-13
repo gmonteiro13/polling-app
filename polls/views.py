@@ -5,10 +5,12 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 
-from rest_framework import viewsets
+from django.contrib.auth.models import User
+from rest_framework import viewsets, generics
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import Choice, Question
-from .serializers import QuestionSerializer
+from .serializers import QuestionSerializer, RegisterSerializer
 
 
 class IndexView(generic.ListView):
@@ -40,6 +42,23 @@ class ResultsView(generic.DetailView):
     template_name = "polls/results.html"
 
 
+class RegisterView(generic.TemplateView):
+    template_name = "polls/register.html"
+
+
+# classes de views para a API
+class QuestionAPIViewSet(viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticated] # exige que o token seja enviado no cabeçalho da requisição
+    
+
+class RegisterAPIView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,) # permite acesso sem token
+    serializer_class = RegisterSerializer
+
+
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -61,7 +80,3 @@ def vote(request, question_id):
         # para evitar que os dados sejam postados duas vezes se o usuário clicar no botão Voltar
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
         # reverse cria a URL de acordo com a view e os argumentos passados, exemplo: /polls/5/results/
-
-class QuestionViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
